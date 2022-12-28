@@ -48,9 +48,5 @@ public:
 
 	TSubclassOf <UPrimitiveComponent> PrimitiveCompClass; 
 
-private: 
-
-	
-	
 
 };
