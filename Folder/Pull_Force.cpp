@@ -6,33 +6,28 @@
 #include "Components/PrimitiveComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
-// Sets default values
+
 APull_Force::APull_Force()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
+	//Create SphereComponent and attach to root body
 	SphereCollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent")); 
-
 	SphereCollisionComponent->SetupAttachment(RootComponent);
+	
+	//Create delegate
 	SphereCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &APull_Force::OnBeginOverlap);
 	SphereCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &APull_Force::OnEndOverlap);
 
 
 }
 
-// Called when the game starts or when spawned
-void APull_Force::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
 void APull_Force::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	
+	//for each Actor in ActorArray, get root component and apply force
 	for (AActor* Actor : ActorArray)
 	{
 	
@@ -59,6 +54,7 @@ void APull_Force::Tick(float DeltaTime)
 
 }
 
+//When Begin Overlap Happens
 void APull_Force::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool BFromSweep, const FHitResult& HitResult)
 {
 
@@ -68,6 +64,7 @@ void APull_Force::OnBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 	}
 }
 
+//When End Overlap Happens
 void APull_Force::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor && ActorArray.Contains(OtherActor))
@@ -76,6 +73,7 @@ void APull_Force::OnEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Othe
 	}
 }
 
+//Add Force Base On Unit Direction
 void APull_Force::PushOrPullForce(FVector UnitDirection, UPrimitiveComponent* InPrimitiveComp)  
 {
 	FVector PullForceVector = UnitDirection * PullForce;
